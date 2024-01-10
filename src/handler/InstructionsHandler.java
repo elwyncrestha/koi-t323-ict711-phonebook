@@ -10,11 +10,13 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import exception.MethodNotImplementedException;
 import exception.UnknownPropertyException;
 import model.Contact;
 import model.Instruction;
 import model.InstructionType;
 import specs.FileHandlerImpl;
+import specs.Runner;
 import utility.DateUtility;
 
 /**
@@ -70,7 +72,13 @@ public class InstructionsHandler extends FileHandlerImpl<Instruction> {
         model.setContact(contact);
     }
 
-    public List<Contact> run(List<Instruction> instructionList, List<Contact> contactList) {
+    @Override
+    public void serialize() throws MethodNotImplementedException {
+        throw new MethodNotImplementedException(
+            String.format("%s::%s", this.getClass().getName(), "serialize"));
+    }
+
+    public List<Contact> run(List<Instruction> instructionList, List<Contact> contactList, Runner saveCallback) {
         for (Instruction instruction : instructionList) {
             Contact contact = instruction.getContact();
             switch (instruction.getType()) {
@@ -102,9 +110,7 @@ public class InstructionsHandler extends FileHandlerImpl<Instruction> {
                     }
                     stream.map(Contact::toString).forEach(System.out::println);
                 }
-                case SAVE -> {
-
-                }
+                case SAVE -> saveCallback.run();
             }
         }
         return contactList;

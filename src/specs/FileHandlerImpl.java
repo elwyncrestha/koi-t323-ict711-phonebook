@@ -4,6 +4,7 @@ import static constant.AppConstant.FILE_STORAGE_LOCATION;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,15 @@ public abstract class FileHandlerImpl<T> implements FileHandler<T> {
         }
 
         return Optional.of(file);
+    }
+
+    @Override
+    public void writeFile(List<String> contents) throws FileNotFoundException {
+        PrintWriter printWriter = new PrintWriter(buildPath());
+        for (String content: contents) {
+            printWriter.println(content);
+        }
+        printWriter.close();
     }
 
     /**

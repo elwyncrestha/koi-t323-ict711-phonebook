@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
+import exception.MethodNotImplementedException;
 import exception.UnknownPropertyException;
 
 /**
@@ -26,6 +27,13 @@ public interface FileHandler<T> {
      * @return A file or an empty instance if file is not found.
      */
     Optional<File> readFile();
+
+    /**
+     * A method to write in a file.
+     *
+     * @param contents The list of string contents.
+     */
+    void writeFile(List<String> contents) throws FileNotFoundException;
 
     /**
      * A method that returns a new empty instance of {@link T}.
@@ -51,5 +59,10 @@ public interface FileHandler<T> {
      */
     List<T> deserialize(File file)
         throws FileNotFoundException, DateTimeParseException, UnknownPropertyException;
+
+    /**
+     * A method to serialize the file contents.
+     */
+    void serialize() throws MethodNotImplementedException, FileNotFoundException;
 
 }

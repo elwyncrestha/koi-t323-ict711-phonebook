@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+import exception.MethodNotImplementedException;
 import exception.UnknownPropertyException;
 import handler.InstructionsHandler;
 import handler.PhoneBookDataHandler;
 import model.Contact;
 import model.Instruction;
+import specs.Runner;
+import utility.LogUtility;
 
 /**
  * This is the driver class from where the program initiates.
@@ -106,7 +109,7 @@ public class Program {
             List<Contact> contactList = dataHandler.deserialize(file.get());
             dataHandler.setData(contactList);
         } catch (FileNotFoundException | DateTimeParseException | UnknownPropertyException e) {
-            System.out.println("LOG: " + e.getMessage());
+            LogUtility.log(e.getMessage());
             return false;
         }
 
@@ -128,9 +131,16 @@ public class Program {
 
         try {
             List<Instruction> list = instructionsHandler.deserialize(file.get());
-            dataHandler.setData(instructionsHandler.run(list, dataHandler.getData()));
+            Runner saveCallback = () -> {
+                try {
+                    dataHandler.serialize();
+                } catch (MethodNotImplementedException | FileNotFoundException e) {
+                    LogUtility.log(e.getMessage());
+                }
+            };
+            dataHandler.setData(instructionsHandler.run(list, dataHandler.getData(), saveCallback));
         } catch (FileNotFoundException | DateTimeParseException | UnknownPropertyException e) {
-            System.out.println("LOG: " + e.getMessage());
+            LogUtility.log(e.getMessage());
             return false;
         }
 
