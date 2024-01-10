@@ -47,6 +47,10 @@ public abstract class FileHandlerImpl<T> implements FileHandler<T> {
         return Optional.of(file);
     }
 
+    /**
+     * This deserialization works under the assumption that each instruction
+     * is separated by an empty line.
+     */
     @Override
     public List<T> deserialize(File file)
         throws FileNotFoundException, DateTimeParseException, UnknownPropertyException {

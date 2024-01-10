@@ -25,6 +25,22 @@ public class PhoneBookDataHandler extends FileHandlerImpl<Contact> {
         super(DATA_FILE_NAME);
     }
 
+    public static void mapContentToContact(Contact contact, String content)
+        throws DateTimeParseException, UnknownPropertyException {
+        String[] keyValue = content.split(" ", 2);
+        String key = keyValue[0].trim();
+        String value = keyValue[1].trim();
+
+        switch (key) {
+            case NAME -> contact.setName(value);
+            case BIRTHDAY -> contact.setBirthday(DateUtility.parse(value));
+            case PHONE -> contact.setPhone(value);
+            case EMAIL -> contact.setEmail(value);
+            case ADDRESS -> contact.setAddress(value);
+            default -> throw new UnknownPropertyException(key);
+        }
+    }
+
     @Override
     public Contact getInstance() {
         return new Contact();
@@ -33,17 +49,6 @@ public class PhoneBookDataHandler extends FileHandlerImpl<Contact> {
     @Override
     public void mapContentToModel(Contact model, String content)
         throws DateTimeParseException, UnknownPropertyException {
-        String[] keyValue = content.split(" ", 2);
-        String key = keyValue[0];
-        String value = keyValue[1].trim();
-
-        switch (key) {
-            case NAME -> model.setName(value);
-            case BIRTHDAY -> model.setBirthday(DateUtility.parse(value));
-            case PHONE -> model.setPhone(value);
-            case EMAIL -> model.setEmail(value);
-            case ADDRESS -> model.setAddress(value);
-            default -> throw new UnknownPropertyException(key);
-        }
+        mapContentToContact(model, content);
     }
 }
