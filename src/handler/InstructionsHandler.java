@@ -8,6 +8,7 @@ import static constant.AppConstant.SAVE;
 
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import exception.MethodNotImplementedException;
@@ -85,8 +86,20 @@ public class InstructionsHandler extends FileHandlerImpl<Instruction> {
         for (Instruction instruction : instructionList) {
             Contact contact = instruction.getContact();
             switch (instruction.getType()) {
-                // TODO: ADD: Support update if matches.
-                case ADD -> contactList.add(contact);
+                case ADD -> {
+                    Optional<Contact> existing = contactList.stream().filter(
+                        c -> (c.getName() != null && c.getName().equals(contact.getName()) && (
+                            c.getBirthday() != null && c.getBirthday()
+                                .isEqual(contact.getBirthday())))).findFirst();
+                    if (existing.isEmpty()) {
+                        contactList.add(contact);
+                    } else {
+                        Contact c = existing.get();
+                        c.setAddress(contact.getAddress());
+                        c.setEmail(contact.getEmail());
+                        c.setPhone(contact.getPhone());
+                    }
+                }
                 case DELETE -> {
                     if (contact.getBirthday() == null) {
                         contactList.removeIf(c -> c.getName().equals(contact.getName()));
