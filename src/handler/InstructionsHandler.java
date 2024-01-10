@@ -56,7 +56,9 @@ public class InstructionsHandler extends FileHandlerImpl<Instruction> {
                 model.setType(InstructionType.DELETE);
                 String[] deleteInputs = value.split(";");
                 contact.setName(deleteInputs[0].trim());
-                contact.setBirthday(DateUtility.parse(deleteInputs[1].trim()));
+                if (deleteInputs.length > 1) {
+                    contact.setBirthday(DateUtility.parse(deleteInputs[1].trim()));
+                }
             }
             case SAVE -> model.setType(InstructionType.SAVE);
             case QUERY -> {
@@ -78,14 +80,22 @@ public class InstructionsHandler extends FileHandlerImpl<Instruction> {
             String.format("%s::%s", this.getClass().getName(), "serialize"));
     }
 
-    public List<Contact> run(List<Instruction> instructionList, List<Contact> contactList, Runner saveCallback) {
+    public List<Contact> run(List<Instruction> instructionList, List<Contact> contactList,
+        Runner saveCallback) {
         for (Instruction instruction : instructionList) {
             Contact contact = instruction.getContact();
             switch (instruction.getType()) {
+                // TODO: ADD: Support update if matches.
                 case ADD -> contactList.add(contact);
-                case DELETE -> contactList.removeIf(
-                    c -> c.getName().equals(contact.getName()) && c.getBirthday()
-                        .isEqual(contact.getBirthday()));
+                case DELETE -> {
+                    if (contact.getBirthday() == null) {
+                        contactList.removeIf(c -> c.getName().equals(contact.getName()));
+                    } else {
+                        contactList.removeIf(
+                            c -> c.getName().equals(contact.getName()) && (c.getBirthday()
+                                .isEqual(contact.getBirthday())));
+                    }
+                }
                 case QUERY -> {
                     Stream<Contact> stream = contactList.stream();
                     if (contact.getName() != null && !contact.getName().isEmpty()) {
