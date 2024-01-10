@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDate;
 
+import utility.DateUtility;
+
 /**
  * This class is a model class to store the contact details of the phone book app.
  */
@@ -53,4 +55,16 @@ public class Contact {
         this.email = email;
     }
 
+    @Override
+    public String toString() {
+        String format = """
+            --------------------------------
+            Name: %s
+            Birthday: %s
+            Address: %s
+            Phone: %s
+            Email: %s
+            """;
+        return String.format(format, name, DateUtility.toString(birthday), address, phone, email);
+    }
 }

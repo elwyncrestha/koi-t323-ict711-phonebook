@@ -20,6 +20,6 @@ save
 
 query name Posephine Esmerelda Bloggs
 
-query birthday 05-09-1980
+query birthday 01-4-1950
 
-query phone 13589634
+query phone 0469832165

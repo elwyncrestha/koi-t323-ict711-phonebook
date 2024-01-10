@@ -35,4 +35,14 @@ public class DateUtility {
         // If none of the formats work, throw an exception.
         throw new DateTimeParseException("Unable to parse the date.", dateString, 0);
     }
+
+    /**
+     * A method to format date into a string.
+     *
+     * @param date A LocalDate instance.
+     * @return A formatted date string.
+     */
+    public static String toString(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+    }
 }

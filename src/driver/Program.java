@@ -128,10 +128,12 @@ public class Program {
 
         try {
             List<Instruction> list = instructionsHandler.deserialize(file.get());
-            return instructionsHandler.run(list);
+            dataHandler.setData(instructionsHandler.run(list, dataHandler.getData()));
         } catch (FileNotFoundException | DateTimeParseException | UnknownPropertyException e) {
             System.out.println("LOG: " + e.getMessage());
             return false;
         }
+
+        return true;
     }
 }

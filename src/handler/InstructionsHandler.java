@@ -8,6 +8,7 @@ import static constant.AppConstant.SAVE;
 
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import exception.UnknownPropertyException;
 import model.Contact;
@@ -69,8 +70,43 @@ public class InstructionsHandler extends FileHandlerImpl<Instruction> {
         model.setContact(contact);
     }
 
-    public boolean run(List<Instruction> instructionList) {
-        // TODO: Run the instruction.
-        return false;
+    public List<Contact> run(List<Instruction> instructionList, List<Contact> contactList) {
+        for (Instruction instruction : instructionList) {
+            Contact contact = instruction.getContact();
+            switch (instruction.getType()) {
+                case ADD -> contactList.add(contact);
+                case DELETE -> contactList.removeIf(
+                    c -> c.getName().equals(contact.getName()) && c.getBirthday()
+                        .isEqual(contact.getBirthday()));
+                case QUERY -> {
+                    Stream<Contact> stream = contactList.stream();
+                    if (contact.getName() != null && !contact.getName().isEmpty()) {
+                        stream = stream.filter(
+                            c -> c.getName() != null && c.getName().equals(contact.getName()));
+                    }
+                    if (contact.getBirthday() != null) {
+                        stream = stream.filter(c -> c.getBirthday() != null && c.getBirthday()
+                            .isEqual(contact.getBirthday()));
+                    }
+                    if (contact.getPhone() != null && !contact.getPhone().isEmpty()) {
+                        stream = stream.filter(
+                            c -> c.getPhone() != null && c.getPhone().equals(contact.getPhone()));
+                    }
+                    if (contact.getEmail() != null && !contact.getEmail().isEmpty()) {
+                        stream = stream.filter(
+                            c -> c.getEmail() != null && c.getEmail().equals(contact.getEmail()));
+                    }
+                    if (contact.getAddress() != null && !contact.getAddress().isEmpty()) {
+                        stream = stream.filter(c -> c.getAddress() != null && c.getAddress()
+                            .equals(contact.getAddress()));
+                    }
+                    stream.map(Contact::toString).forEach(System.out::println);
+                }
+                case SAVE -> {
+
+                }
+            }
+        }
+        return contactList;
     }
 }
