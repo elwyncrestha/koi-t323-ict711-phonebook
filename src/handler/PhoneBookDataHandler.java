@@ -22,6 +22,7 @@ import utility.DateUtility;
 /**
  * An implementation class that handles phone book data.
  * Note: This class is only used for handling the data, not the instructions.
+ * Check {@link InstructionsHandler} for the data.
  */
 public class PhoneBookDataHandler extends FileHandlerImpl<List<Contact>> {
 
@@ -58,7 +59,7 @@ public class PhoneBookDataHandler extends FileHandlerImpl<List<Contact>> {
                 String line = scanner.nextLine();
 
                 // C1: If contact object is not null and line is empty, it denotes an end of the entry details.
-                if (contact != null && (line.trim().isEmpty())) {
+                if (contact != null && line.trim().isEmpty()) {
                     contactList.add(contact);
                     contact = null;
                     continue;

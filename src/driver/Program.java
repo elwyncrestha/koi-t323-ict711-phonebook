@@ -5,10 +5,13 @@ import java.io.FileNotFoundException;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 import exception.UnknownPropertyException;
+import handler.InstructionsHandler;
 import handler.PhoneBookDataHandler;
 import model.Contact;
+import model.Instruction;
 
 /**
  * This is the driver class from where the program initiates.
@@ -26,21 +29,22 @@ public class Program {
             System.exit(0);
         }
 
+        showTriggerInstructionPrompt();
     }
 
     private static void showWelcomeMessage() {
-        String welcomeMsg = """
+        String msg = """
             | ------------------------------- |
             |            Phonebook            |
             |                                 |
             |        Welcome to the app!      |
             | ------------------------------- |
             """;
-        System.out.println(welcomeMsg);
+        System.out.println(msg);
     }
 
     private static void showFailedInitMessage() {
-        String welcomeMsg = """
+        String msg = """
             | ------------------------------- |
             |            Phonebook            |
             |                                 |
@@ -48,13 +52,47 @@ public class Program {
             |      Check the data file.       |
             | ------------------------------- |
             """;
-        System.out.println(welcomeMsg);
+        System.out.println(msg);
+    }
+
+    private static void showTriggerInstructionPrompt() {
+        String msg = """
+            | ------------------------------- |
+            |            Phonebook            |
+            |                                 |
+            |    Would you like to trigger    |
+            |    the instructions? (y/n)      |
+            | ------------------------------- |
+            """;
+        System.out.println(msg);
+
+        final Scanner scanner = new Scanner(System.in);
+        char ch = scanner.nextLine().toCharArray()[0];
+
+        if (ch == 'y') {
+            boolean runPass = runInstructions();
+            if (!runPass) {
+                showFailedRunMessage();
+            }
+        }
+    }
+
+    private static void showFailedRunMessage() {
+        String msg = """
+            | ------------------------------- |
+            |            Phonebook            |
+            |                                 |
+            |     Run instructions failed!    |
+            |     Check the file.             |
+            | ------------------------------- |
+            """;
+        System.out.println(msg);
     }
 
     /**
      * An initialization method to import phone book data from the file.
      *
-     * @return A flag to determine if the initialization processes succeeded or not.
+     * @return A flag to determine if the initialization process succeeded or not.
      */
     private static boolean init() {
         dataHandler = new PhoneBookDataHandler();
@@ -68,7 +106,31 @@ public class Program {
             List<Contact> contactList = dataHandler.deserialize(file.get());
             dataHandler.setData(contactList);
         } catch (FileNotFoundException | DateTimeParseException | UnknownPropertyException e) {
-            System.out.println(e.getMessage());
+            System.out.println("LOG: " + e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * A method to read and run the instructions from the file.
+     *
+     * @return A flag to determine if the run process succeeded or not.
+     */
+    private static boolean runInstructions() {
+        InstructionsHandler instructionsHandler = new InstructionsHandler();
+
+        Optional<File> file = instructionsHandler.readFile();
+        if (file.isEmpty()) {
+            return false;
+        }
+
+        try {
+            List<Instruction> list = instructionsHandler.deserialize(file.get());
+            instructionsHandler.run(list);
+        } catch (FileNotFoundException | DateTimeParseException | UnknownPropertyException e) {
+            System.out.println("LOG: " + e.getMessage());
             return false;
         }
 
