@@ -7,12 +7,7 @@ import static constant.AppConstant.EMAIL;
 import static constant.AppConstant.NAME;
 import static constant.AppConstant.PHONE;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 import exception.UnknownPropertyException;
 import model.Contact;
@@ -24,59 +19,31 @@ import utility.DateUtility;
  * Note: This class is only used for handling the data, not the instructions.
  * Check {@link InstructionsHandler} for the data.
  */
-public class PhoneBookDataHandler extends FileHandlerImpl<List<Contact>> {
+public class PhoneBookDataHandler extends FileHandlerImpl<Contact> {
 
     public PhoneBookDataHandler() {
         super(DATA_FILE_NAME);
     }
 
-    private static void mapContentToContact(Contact contact, String content)
+    @Override
+    public Contact getInstance() {
+        return new Contact();
+    }
+
+    @Override
+    public void mapContentToModel(Contact model, String content)
         throws DateTimeParseException, UnknownPropertyException {
         String[] keyValue = content.split(" ", 2);
         String key = keyValue[0];
         String value = keyValue[1].trim();
 
         switch (key) {
-            case NAME -> contact.setName(value);
-            case BIRTHDAY -> contact.setBirthday(DateUtility.parse(value));
-            case PHONE -> contact.setPhone(value);
-            case EMAIL -> contact.setEmail(value);
-            case ADDRESS -> contact.setAddress(value);
+            case NAME -> model.setName(value);
+            case BIRTHDAY -> model.setBirthday(DateUtility.parse(value));
+            case PHONE -> model.setPhone(value);
+            case EMAIL -> model.setEmail(value);
+            case ADDRESS -> model.setAddress(value);
             default -> throw new UnknownPropertyException(key);
         }
-    }
-
-    @Override
-    public List<Contact> deserialize(File file)
-        throws FileNotFoundException, DateTimeParseException, UnknownPropertyException {
-        List<Contact> contactList = new ArrayList<>();
-
-        try (final Scanner scanner = new Scanner(file)) {
-
-            Contact contact = null;
-            boolean hasNextLine = scanner.hasNextLine();
-            while (hasNextLine) {
-                String line = scanner.nextLine();
-
-                // C1: If contact object is not null and line is empty, it denotes an end of the entry details.
-                if (contact != null && line.trim().isEmpty()) {
-                    contactList.add(contact);
-                    contact = null;
-                    continue;
-                }
-
-                if (contact == null) {
-                    contact = new Contact();
-                }
-                mapContentToContact(contact, line);
-
-                hasNextLine = scanner.hasNextLine();
-                // Similar to above condition C1, if the current line is the last line, it denotes an end of the entry details.
-                if (!hasNextLine) {
-                    contactList.add(contact);
-                }
-            }
-        }
-        return contactList;
     }
 }
